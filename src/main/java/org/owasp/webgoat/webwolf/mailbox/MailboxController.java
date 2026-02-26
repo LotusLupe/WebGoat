@@ -22,8 +22,6 @@
 
 package org.owasp.webgoat.webwolf.mailbox;
 
-import org.springframework.security.core.Authentication;
-import javax.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -59,28 +57,11 @@ public class MailboxController {
     return modelAndView;
   }
 
-@PostMapping("/mail")
-@ResponseStatus(HttpStatus.CREATED)
-public void sendEmail(@Valid @RequestBody EmailDTO req) {
-
-    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    Object principal = auth.getPrincipal();
-
-    String senderUsername;
-    if (principal instanceof UserDetails userDetails) {
-        senderUsername = userDetails.getUsername();
-    } else {
-        senderUsername = principal.toString();
-    }
-
-    Email email = new Email();
-    email.setSender(senderUsername);
-    email.setRecipient(req.recipient());
-    email.setTitle(req.title());
-    email.setContents(req.contents());
-
+  @PostMapping("/mail")
+  @ResponseStatus(HttpStatus.CREATED)
+  public void sendEmail(@RequestBody Email email) {
     mailboxRepository.save(email);
-}
+  }
 
   @DeleteMapping("/mail")
   @ResponseStatus(HttpStatus.ACCEPTED)
